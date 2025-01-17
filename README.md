@@ -35,8 +35,8 @@ All dependencies are managed via Maven.
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-username/your-repo.git
-   cd your-repo
+   git clone https://github.com/michaelwaheb/API_Automation.git
+   cd API_Automation
    ```
 
 2. **Open in IDE**:
