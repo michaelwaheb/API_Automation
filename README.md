@@ -53,11 +53,9 @@ All dependencies are managed via Maven.
 ## Configuration
 
 1. **API Base URL**:
-   - Update the base URL in the `BaseTest` class or configuration file (e.g., `src/test/resources/config.properties`).
-
-   Example:
+   - Update the base URL in the `BaseTest` class or configuration file (src/main/java/config/Staging.properties).
    ```properties
-   base.url=https://example.com
+   base.url=https://reqres.in/
    ```
 
 2. **JSON Data**:
