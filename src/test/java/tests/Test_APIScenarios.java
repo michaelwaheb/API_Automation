@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.json.JSONObject;
 import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.JsonNode;
+import utils.ErrorHandler;
 import utils.JsonLoader;
 import utils.Utils;
 import java.net.SocketTimeoutException;
@@ -14,60 +15,60 @@ import static org.hamcrest.Matchers.*;
 import static io.restassured.RestAssured.given;
 
 public class Test_APIScenarios extends BaseTest {
-    private static String userId;
-    private static Response createUserResponse;
+    private  String userId;
+    private  Response createUserResponse;
 
     @Test
     @Story("Create a user")
     @Description("Test Description : Verify the details of user of id")
     public void CreateAUser() {
-        try {
-            // Load user data from JSON file using JsonLoader class
-            JsonNode userJson = JsonLoader.loadUserData("src/test/java/Data/UserData.json");
-// Send POST request
-            Response response =
-                    given()
-                            .header("Content-Type", "application/json")
-                            .body(userJson.toString())
-                            .when()
-                            .post("/api/users")
-                            .then()
-                            .statusCode(201)
-                            .extract()
-                            .response();
+        // Load user data from JSON file using JsonLoader class
+        JsonNode userJson = JsonLoader.loadUserData("src/test/java/Data/UserData.json");
 
+        // Send POST request using ErrorHandler to execute and validate
+        Response response = ErrorHandler.executeWithValidation(() ->
+                        given()
+                                .header("Content-Type", "application/json")
+                                .body(userJson.toString())
+                                .when()
+                                .post("/api/users")
+                                .then()
+                                .statusCode(200)
+                                .extract()
+                                .response(),
+                200, "Error during user creation");
+
+        // Check if response is valid
+        if (response != null) {
             RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-            Utils.handleResponseError(response, 201, "User Creation failed");
-
             // Print response for verification
             Utils.printResponse("User created:", response);
             // Extract user ID from the response
             userId = response.path("id");
             createUserResponse = response;
-
-        } catch (Exception e) {
-            Utils.handleError(e, "Error occurred while creating user");
+        } else {
+            System.err.println("Error creating user. Please check the logs for details.");
         }
     }
+
     @Test
     @Story("Retrieve a User based on ID")
     @Description("Test Description : Verify the details of user of id-3")
     public void RetrieveAUser() {
-        try {
-            // Send GET request to retrieve the user details
-            Response getResponse =
-                    given()
-                            .when()
-                            .get("/api/users/" + userId)
-                            .then()
-                            .statusCode(200)
-                            .extract()
-                            .response();
+        // Send GET request to retrieve the user details using ErrorHandler to execute and validate
+        Response getResponse = ErrorHandler.executeWithValidation(() ->
+                        given()
+                                .when()
+                                .get("/api/users/" + userId)
+                                .then()
+                                .statusCode(200)
+                                .extract()
+                                .response(),
+                200, "Error during retrieving user");
 
-
+        // Check if response is valid
+        if (getResponse != null) {
             RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-            Utils.handleResponseError(createUserResponse, 200, "User Retrevial failed");
-
             // Print response for verification
             Utils.printResponse("User Data by id:", getResponse);
 
@@ -76,43 +77,41 @@ public class Test_APIScenarios extends BaseTest {
             JSONObject retrievedUserJson = new JSONObject(getResponse.asString());
             assert retrievedUserJson.similar(createUserJson) : "Mismatch between created user and retrieved user data";
             System.out.println("The retrieved user details match the created user details.");
-
-
-        } catch (Exception e) {
-            Utils.handleError(e, "Error occurred while Retreving user");
+        } else {
+            System.err.println("Error retrieving user data. Please check the logs for details.");
         }
     }
+
 
 
     @Test
     @Story("Update a User based on ID")
     @Description("Test Description : Verify the details of user of id-3")
-
     public void updateAUser() {
-        try {
-            // Load user data from JSON file using JsonLoader class
-            JsonNode updateduserJson = JsonLoader.loadUserData("src/test/java/Data/UserDataUpdated.json");
-            // Send GET request to retrieve the user details
-            Response updateResponse =
-                    given()
-                            .header("Content-Type", "application/json")
-                            .body(updateduserJson.toString())
-                            .when()
-                            .put("/api/users/" + userId)
-                            .then()
-                            .statusCode(200)
-                            .extract()
-                            .response();
+        // Load user data from JSON file using JsonLoader class
+        JsonNode updatedUserJson = JsonLoader.loadUserData("src/test/java/Data/UserDataUpdated.json");
 
+        // Send PUT request to update the user details using ErrorHandler to execute and validate
+        Response updateResponse = ErrorHandler.executeWithValidation(() ->
+                        given()
+                                .header("Content-Type", "application/json")
+                                .body(updatedUserJson.toString())
+                                .when()
+                                .put("/api/users/" + userId)
+                                .then()
+                                .statusCode(200)
+                                .extract()
+                                .response(),
+                200, "Error during updating user");
+
+        // Check if response is valid
+        if (updateResponse != null) {
             RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-            Utils.handleResponseError(updateResponse, 200, "User Update failed");
-
             // Print response for verification
-            System.out.println("User with ID" + userId + "updated Successfully with following details" + updateResponse.asString());
-        }catch (Exception e) {
-            Utils.handleError(e, "Error occurred while update user");
+            System.out.println("User with ID " + userId + " updated successfully with the following details: " + updateResponse.asString());
+        } else {
+            System.err.println("Error updating user. Please check the logs for details.");
         }
-
     }
 
 }
