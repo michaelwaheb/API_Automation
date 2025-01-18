@@ -20,7 +20,6 @@ public class Test_APIScenarios extends BaseTest {
 
     @Test
     @Story("Create a user")
-    @Description("Test Description : Verify the details of user of id")
     public void CreateAUser() {
         // Load user data from JSON file using JsonLoader class
         JsonNode userJson = JsonLoader.loadUserData("src/test/java/Data/UserData.json");
@@ -53,7 +52,6 @@ public class Test_APIScenarios extends BaseTest {
 
     @Test
     @Story("Retrieve a User based on ID")
-    @Description("Test Description : Verify the details of user of id-3")
     public void RetrieveAUser() {
         // Send GET request to retrieve the user details using ErrorHandler to execute and validate
         Response getResponse = ErrorHandler.executeWithValidation(() ->
@@ -86,7 +84,6 @@ public class Test_APIScenarios extends BaseTest {
 
     @Test
     @Story("Update a User based on ID")
-    @Description("Test Description : Verify the details of user of id-3")
     public void updateAUser() {
         // Load user data from JSON file using JsonLoader class
         JsonNode updatedUserJson = JsonLoader.loadUserData("src/test/java/Data/UserDataUpdated.json");
